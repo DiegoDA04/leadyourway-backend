@@ -1,0 +1,26 @@
+version: '3'
+services:
+  user-service:
+    image: user-service:1.0
+    deploy:
+      replicas: 2
+    build:
+      context: ./user-service
+    networks:
+      - leadyourway-network
+    depends_on:
+      - config-service
+  config-service:
+    container_name: config-service
+    image: config-service:1.0
+    build: 
+      context: ./config-service
+    ports:
+      - "8888:8888"
+    networks:
+      - leadyourway-network
+networks:
+  leadyourway-network:
+    driver: bridge
+
+      
