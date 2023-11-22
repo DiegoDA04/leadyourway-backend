@@ -3,9 +3,12 @@ package pe.edu.leadyourway.rentalservice.interfaces.rest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import pe.edu.leadyourway.rentalservice.application.internal.outboundservices.ExternalBikeService;
 import pe.edu.leadyourway.rentalservice.application.internal.outboundservices.ExternalUserService;
-import pe.edu.leadyourway.rentalservice.application.internal.outboundservices.resources.BikeResource;
 import pe.edu.leadyourway.rentalservice.domain.exceptions.ResourceNotFoundException;
 import pe.edu.leadyourway.rentalservice.domain.model.Rental;
 import pe.edu.leadyourway.rentalservice.domain.services.RentalService;
@@ -15,9 +18,14 @@ import pe.edu.leadyourway.rentalservice.interfaces.rest.resources.RentalResource
 
 import java.util.List;
 import java.util.stream.Collectors;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 
 @RestController
 @RequestMapping("/api/v1/rentals")
+@Tag(name = "Rents", description = "Rents Management Endpoints")
 public class RentalsController {
     private final RentalService rentalService;
     private final ExternalUserService externalUserService;
@@ -31,7 +39,18 @@ public class RentalsController {
         this.mapper = mapper;
     }
 
+
     @PostMapping
+    @Operation(summary = "Create a Rent")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "201", description = "Successfully created Rent", content = {
+            @Content(mediaType = "application/json", schema = @Schema(implementation = RentalResource.class))
+        }),
+        @ApiResponse(responseCode = "400", description = "One or more fields are invalid",
+            content = @Content),
+        @ApiResponse(responseCode = "500", description = "Internal server error",
+            content = @Content),
+    })
     public ResponseEntity<Rental> createRental(@RequestBody CreateRentalResource resource) {
 
         var userResponse = externalUserService.getUserById(resource.getUserId());
@@ -48,6 +67,13 @@ public class RentalsController {
     }
 
     @GetMapping
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Found Rents", content = {
+                    @Content(mediaType = "application/json", array = @ArraySchema( schema = @Schema( implementation = RentalResource.class)))
+            }),
+            @ApiResponse(responseCode = "500", description = "Internal server error",
+                    content = @Content),
+    })
     public ResponseEntity<List<RentalResource>> getAllRentals() {
 
 
@@ -63,6 +89,20 @@ public class RentalsController {
     }
 
     @GetMapping("{rentalId}")
+    @Operation(summary = "Get a Rent by its Id")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Found Rent", content = {
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = RentalResource.class))
+            }),
+            @ApiResponse(responseCode = "400", description = "Invalid id supplied", content = {
+                    @Content
+            }),
+            @ApiResponse(responseCode = "404", description = "Rent not Found", content = {
+                    @Content
+            }),
+            @ApiResponse(responseCode = "500", description = "Internal server error",
+                    content = @Content),
+    })
     public ResponseEntity<RentalResource> getRentalById(@PathVariable Long rentalId) {
 
         Rental rental = rentalService.getById(rentalId);
