@@ -33,8 +33,9 @@ public class UsersController {
         ResponseValidationResource response = externalReniecService.validatePerson(mapper.toModel(resource));
 
         System.out.println(response);
+
         if(!response.isExists())
-            throw new ResourceValidationException("User doesn't exists in RENIEC");
+            throw new ResourceValidationException("User", "Cannot proceed with the creation of the User, because that person is not registered in the RENIEC");
 
         return new ResponseEntity<>(mapper.toResource(userService.create(mapper.toModel(resource))), HttpStatus.CREATED);
     }
@@ -42,6 +43,11 @@ public class UsersController {
     @GetMapping
     public ResponseEntity<List<UserResource>> getAllUsers() {
         return new ResponseEntity<>(mapper.modelListPage(userService.getAll()), HttpStatus.OK);
+    }
+
+    @GetMapping("/email/{email}")
+    public ResponseEntity<UserResource> getUserByEmail(@PathVariable String email) {
+        return new ResponseEntity<>(mapper.toResource(userService.getByEmail(email)), HttpStatus.OK);
     }
 
     @GetMapping("{userId}")

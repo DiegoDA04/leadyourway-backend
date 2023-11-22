@@ -1,5 +1,15 @@
 version: '3'
 services:
+  auth-service:
+    image: auth-service:1.0
+    ports:
+      - "8087:8087"
+    build:
+      context: ./auth-service
+    depends_on:
+      - api-gateway
+    networks:
+      - leadyourway-network
   bike-service:
     image: bike-service:1.0
     ports:
@@ -34,15 +44,8 @@ services:
       context: ./payment-service
     ports:
       - "8085"
-    networks:
-      - leadyourway-network
-
-  consultation-service:
-    image: consultation-service:1.0
-    build:
-      context: ./consultation-service
-    ports:
-      - "8181:8181"
+    depends_on:
+      - api-gateway
     networks:
       - leadyourway-network
 

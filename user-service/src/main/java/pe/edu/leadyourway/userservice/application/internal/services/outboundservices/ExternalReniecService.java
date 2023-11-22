@@ -10,7 +10,7 @@ import pe.edu.leadyourway.userservice.domain.model.User;
 @Service
 public class ExternalReniecService {
 
-    private static final String URL = "http://consultation-service:8181/api/v1/consultations";
+    private static final String URL = "https://leadyourway-reniec.azurewebsites.net/api/v1/consultations";
 
     private final RestTemplate restTemplate;
 

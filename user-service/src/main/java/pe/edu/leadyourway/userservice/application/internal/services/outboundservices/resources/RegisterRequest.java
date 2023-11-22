@@ -1,4 +1,4 @@
-package pe.upc.authservice.domain.entities;
+package pe.edu.leadyourway.userservice.application.internal.services.outboundservices.resources;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,7 +9,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @Getter
 @Setter
-public class LoginRequest {
+public class RegisterRequest {
     private String email;
     private String password;
 }

@@ -7,18 +7,24 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import pe.upc.authservice.domain.entities.AuthResponse;
 import pe.upc.authservice.domain.entities.LoginRequest;
 import pe.upc.authservice.domain.entities.LoginResponse;
-import pe.upc.authservice.domain.entities.User;
+import pe.upc.authservice.domain.entities.RegisterRequest;
+import pe.upc.authservice.exceptions.ResourceValidationException;
+import pe.upc.authservice.service.outboundservices.ExternalUserService;
 
 @RestController()
-@RequestMapping("/api/v1/")
+@RequestMapping("/api/v1/auth")
 public class AuthController {
 
     @Autowired
-    private UserService userService;
+    private AuthService authService;
 
-    @PostMapping("login")
+    @Autowired
+    private ExternalUserService userService;
+
+    @PostMapping("/login")
     @ResponseStatus(HttpStatus.OK)
     @Operation(
             summary = "Login",
@@ -45,17 +51,28 @@ public class AuthController {
                     links = @io.swagger.v3.oas.annotations.links.Link(name = "no links")
             )
     })
-    public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
-        User user = userService.findByUsername(loginRequest.getUsername());
-        if (user != null && userService.checkPassword(loginRequest.getPassword(), user.getPassword())) {
-            String token = JwtUtil.generateToken(user);
+    public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest loginRequest) {
+
+        var response = userService.getUserByEmail(loginRequest.getEmail());
+
+        if(response.getStatusCode() != HttpStatus.OK)
+            throw new ResourceValidationException("User is not registered in the system");
+
+        String token = JwtUtil.generateToken(loginRequest);
+        LoginResponse loginResponse = new LoginResponse(token);
+
+        return new ResponseEntity<>(loginResponse, HttpStatus.OK);
+
+        /*
+        if (loginRequest != null && authService.checkPassword(loginRequest.getPassword(), loginRequest.getPassword())) {
+            String token = JwtUtil.generateToken(loginRequest);
             return ResponseEntity.ok(new LoginResponse(token));
         } else {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
+        }*/
     }
 
-    @PostMapping("register")
+    @PostMapping("/register")
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(
             summary = "Register",
@@ -76,11 +93,7 @@ public class AuthController {
                     links = @io.swagger.v3.oas.annotations.links.Link(name = "no links")
             )
     })
-    public ResponseEntity<?> register(@RequestBody User user) {
-        try {
-            return ResponseEntity.status(HttpStatus.CREATED).body(userService.save(user));
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+    public ResponseEntity<AuthResponse> register(@RequestBody RegisterRequest registerRequest) {
+        return new ResponseEntity<>(new AuthResponse().withSuccess(true).withData(authService.register(registerRequest)).withMessage("Successfully register"), HttpStatus.CREATED);
     }
 }
