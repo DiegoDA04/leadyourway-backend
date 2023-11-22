@@ -6,12 +6,11 @@ import org.springframework.web.client.RestTemplate;
 import pe.edu.leadyourway.userservice.application.internal.services.outboundservices.resources.RequestPersonValidationResource;
 import pe.edu.leadyourway.userservice.application.internal.services.outboundservices.resources.ResponseValidationResource;
 import pe.edu.leadyourway.userservice.domain.model.User;
-import pe.edu.leadyourway.userservice.interfaces.rest.resources.UserResource;
 
 @Service
 public class ExternalReniecService {
 
-    private static final String URL = "http://localhost:8181/api/v1/consultations";
+    private static final String URL = "http://consultation-service:8181/api/v1/consultations";
 
     private final RestTemplate restTemplate;
 

@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import pe.edu.leadyourway.paymentservice.application.internal.outboundservices.resources.RentalResource;
 
 
-@FeignClient(name="RENTAL-SERVICE")
+@FeignClient(name="RENTAL-SERVICE", url = "http://api-gateway:8080")
 public interface ExternalRentalService {
 
     @GetMapping("/api/v1/rentals/{rentalId}")

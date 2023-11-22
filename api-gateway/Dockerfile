@@ -1,6 +1,9 @@
 # The base image on which we would build our image
 FROM openjdk:17-jdk-alpine
 
+# Install curl and maven
+RUN apk --no-cache add curl
+
 # Set the working directory
 WORKDIR /app
 

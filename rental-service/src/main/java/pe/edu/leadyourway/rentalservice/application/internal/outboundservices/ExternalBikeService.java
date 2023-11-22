@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import pe.edu.leadyourway.rentalservice.application.internal.outboundservices.resources.BikeResource;
 
-@FeignClient(name = "BIKE-SERVICE")
+@FeignClient(name = "BIKE-SERVICE", url = "http://api-gateway:8080")
 public interface ExternalBikeService {
 
     @GetMapping("/api/v1/bikes/{bikeId}")

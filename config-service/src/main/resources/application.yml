@@ -7,5 +7,5 @@ spring:
     config:
       server:
         git:
-          uri: https://github.com/leadyourway-upc/Spring-cloud-config-LeadYourWay.git
+          uri: https://github.com/leadyourway-upc/leadyourway-spring-cloud-config.git
           default-label: main
